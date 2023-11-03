@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% block title %}SocialGram{% endblock %} 
+
+{% block content %}
+
+<style>
+  img.post_image {
+    /* height: 40.625rem; */
+    width: 100%;
+    display: table;
+    margin: auto;
+    object-fit: contain;
+    transition: 1.1s;
+  }
+
+  .comment_div {
+    height: 8.5rem;
+    overflow: scroll;
+    padding: 10px;
+  }
+
+  .comment_div::-webkit-scrollbar {
+    display: none;
+  }
+
+  i.icon {
+    cursor: pointer;
+  }
+
+  .profilePhoto {
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+    object-fit: cover;
+  }
+
+  .innercommentboxindex{
+    width: 100%;
+    height: 60vh;
+    overflow: auto;
+  }
+
+  .innercommentboxindex p{
+    overflow-wrap: anywhere;
+  }
+
+  a,a:hover{
+    text-decoration: none;
+    color:black;
+  }
+
+  .profilePhoto2{
+    width: 45px;
+    height: 45px;
+    border-radius: 100%;
+    object-fit: cover;
+  }
+</style>
+
+
+
+{% if data %}
+<div class="dropdown"></div>
+<div class="container">
+  <div class="row">
+    <div class="col-lg-4 col-md-8 col-sm-12 mx-auto">
+      <div class="innerdiv mt-4">
+        {% for i in data %}
+        <div class="row">
+          <div class="col-6">
+            <a href="{% url 'UserApp:profile' i.user %}">
+              {% if i.user.Profile.profilePhoto.url %}
+              <img src="{{i.user.Profile.profilePhoto.url}}" class="profilePhoto" alt="" />
+              {% else %}
+              <i class="fa-solid fa-circle-user fs-4" style="color: #000000"></i>
+              {% endif %} {{i.user}}
+            </a>
+          </div>
+          <div class="col-6">
+            <div class="dropdown text-end">
+              <button class="btn dropdown-toggle align-content-end" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="icon fa-solid fa-bars-staggered fs-5" style="color: #000000"></i>
+              </button>
+              <ul class="dropdown-menu">
+                {% if user == i.user %}
+                <li><a class="dropdown-item" href="#">Delete Post</a></li>
+                {% endif %}
+                <li><a class="dropdown-item" href="{% url 'UserApp:PostView' i.post_slug %}">View Post</a></li>
+                <li><a class="dropdown-item" href="#">{{i.created_at|date:"d/m/y"}} {{i.created_at|time:"P"}}</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <img src="{{i.post.url}}" class="post_image border" alt="" id="{{i.post_slug}}" />
+        <div class="row">
+          <div class="col-12 fs-4">
+            {% if user in i.likes.all %}
+            <a href=" {% url 'UserApp:addRemoveLike' i.post_slug %} " style="text-decoration: none;">
+              <i class="icon fa-solid fa-heart" style="color: #ff0000"></i>
+            </a>
+            {% else %}
+            <a href=" {% url 'UserApp:addRemoveLike' i.post_slug %} " style="text-decoration: none;">
+              <i class="icon fa-regular fa-heart" style="color: #000000"></i>
+            </a>
+            {% endif %}
+            
+            <!-- <button type="button" class="btn" > -->
+              <i class="icon fa-regular fa-comment" data-bs-toggle="modal" data-bs-target="#commentbox{{i.id}}" style="color: #000000"></i>
+            <!-- </button> -->
+            <div class="modal fade" id="commentbox{{i.id}}" tabindex="-1" aria-labelledby="commentbox{{i.id}}Label" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="commentbox{{i.id}}Label">Comments</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="{% url 'UserApp:addComment' i.post_slug %}" method="post">
+                      {% csrf_token %}
+                      <div class="row">
+                        <div class="col-9">
+                          <input type="text" name="comment" class="form-control" placeholder="Add Comment" id="">
+                        </div>
+                        <div class="col-3">
+                          <button type="submit" class="btn btn-outline btn"><i class="fa-solid fa-paper-plane" style="color: #000000;"></i></button>
+                        </div>
+                      </div>
+                    </form>
+                    <hr>
+                    <div class="innercommentboxindex">
+                      {% for j in i.post_comments.all %}
+                      <div class="col-lg-12">
+                        <p>
+                          {% if j.user.Profile.profilePhoto.url %}
+                          <img src="{{j.user.Profile.profilePhoto.url}}" class="profilePhoto2 my-1" alt="" />
+                          {% else %}
+                          <i class="fa-solid fa-circle-user fs-4" style="color: #000000"></i>
+                          {% endif %} 
+                          {{j.user}} - {{j.Comment}} 
+                          {% if user == j.user %}
+                          <a href="{% url 'UserApp:delete_Comment' j.id  i.post_slug %}"><i class="fa-solid fa-trash" style="color: #ff0000; text-align: end"></i> </a>
+                          {% endif %}
+                        </p>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 my-1">
+            <span class="fs-6 text-end" style="text-align: right"> </span>
+          </div>
+        </div>
+        {% if i.number_of_likes <= 1 %}
+        {{i.number_of_likes}} like
+        {% else %}
+        {{i.number_of_likes}} likes
+        {% endif %}
+        {% if i.post_title %}
+        <p><b>{{i.user}}</b> - {{i.post_title}}</p>
+        {% endif %}
+        <hr>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+
+<h1 align="center" class="mt-5">Please visit Discover page!! <a href="{% url 'UserApp:discover' %}" class="text-primary">Click here..</a></h1>
+
+{% endif %}
+
+<!-- <script>
+  let res = false;
+  function show_Comments() {
+    if (res == true) {
+      document.getElementById("commentidbox").style.display = "none";
+      document.getElementById("showhidebtn").innerHTML = "Show Comments";
+      res = false;
+    } else {
+      document.getElementById("commentidbox").style.display = "block";
+      document.getElementById("showhidebtn").innerHTML = "Hide";
+      res = true;
+    }
+  }
+</script> -->
+
+{% endblock %}

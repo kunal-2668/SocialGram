@@ -1,0 +1,74 @@
+{% extends 'base.html' %} {% block title %}{{data.username}}{% endblock %} {% block content %}
+
+<style>
+  .profilepagephoto {
+    width: 12.5rem;
+    height: 12.5rem;
+    border-radius: 100px;
+    object-fit: cover;
+    display: table;
+    margin: auto;
+  }
+
+  .profileposts{
+    width: 100%;
+    height: 40vh;
+    object-fit: cover;
+  }
+</style>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-lg-8 col-md-12 col-sm-12 mx-auto">
+      <div class="row">
+        <div class="col-lg-6">
+          <img src="{{data.Profile.profilePhoto.url}}" class="profilepagephoto" alt="" />
+        </div>
+        <div class="col-lg-6 my-3">
+          <div class="row text-center">
+            <div class="col-6">
+              <h4>{{data.username}}</h4>
+            </div>
+            <div class="col-6">
+              {% if user.username == data.username %}
+              <button class="btn active btn-sm">Edit</button>
+              {% else %}
+              <a href="{% url 'UserApp:followuser' data.username %}" style="text-decoration: none;">
+                <button class="btn active btn-sm">
+                {% if user in data.Profile.followers.all %}
+                  Following
+                {% else %}  
+                  Follow
+                {% endif %}
+                </button>
+              </a>
+              {% endif %}
+            </div>
+            <div class="row text-center mt-4">
+              <div class="col-6">
+                <h5>Followers {{data.Profile.number_of_followers}}</h5>
+              </div>
+              <div class="col-6">
+                <h5>Followings {{data.Profile.number_of_following}}</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr class="my-4">
+  {% if data.Posts.all %}
+  <div class="row">
+    {% for i in data.Posts.all %}
+    <div class="col-lg-4 col-md-4 col-sm-4 p-5">
+      <a href="{% url 'UserApp:PostView' i.post_slug %}" >
+        <img src="{{i.post.url}}" class="profileposts" alt="">
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
