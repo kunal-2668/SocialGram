@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "corsheaders",
     'bootstrap5',
     'AuthApp',
     'UserApp',
@@ -94,6 +95,9 @@ PHONENUMBER_DEFAULT_REGION = "IN"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    "corsheaders.middleware.CorsMiddleware",
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -190,3 +194,6 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "kunal00.kr@gmail.com"
 EMAIL_HOST_PASSWORD = "zhokyfwpiiasfdah"
+
+
+CORS_ALLOW_ALL_ORIGINS = True

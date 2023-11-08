@@ -10,10 +10,26 @@
     margin: auto;
   }
 
-  .profileposts{
+  .profileposts {
     width: 100%;
     height: 40vh;
     object-fit: cover;
+  }
+
+  .link {
+    cursor: pointer;
+  }
+
+  .profilePhoto {
+    width: 4rem;
+    height: 4rem;
+    object-fit: cover;
+    border-radius: 100%;
+  }
+
+  .center {
+    display: table;
+    margin: auto;
   }
 </style>
 
@@ -31,25 +47,29 @@
             </div>
             <div class="col-6">
               {% if user.username == data.username %}
-              <button class="btn active btn-sm">Edit</button>
+              <a href="{% url 'UserApp:editprofile' %}">
+                <button class="btn active btn-sm">Edit</button>
+              </a>
               {% else %}
               <a href="{% url 'UserApp:followuser' data.username %}" style="text-decoration: none;">
                 <button class="btn active btn-sm">
-                {% if user in data.Profile.followers.all %}
+                  {% if user in data.Profile.followers.all %}
                   Following
-                {% else %}  
+                  {% else %}
                   Follow
-                {% endif %}
+                  {% endif %}
                 </button>
               </a>
               {% endif %}
             </div>
             <div class="row text-center mt-4">
               <div class="col-6">
-                <h5>Followers {{data.Profile.number_of_followers}}</h5>
+                <h5 class="link" data-bs-toggle="modal" data-bs-target="#followersModal">Followers
+                  {{data.Profile.number_of_followers}}</h5>
               </div>
               <div class="col-6">
-                <h5>Followings {{data.Profile.number_of_following}}</h5>
+                <h5 class="link" data-bs-toggle="modal" data-bs-target="#followingModal">Followings
+                  {{data.Profile.number_of_following}}</h5>
               </div>
             </div>
           </div>
@@ -62,13 +82,68 @@
   <div class="row">
     {% for i in data.Posts.all %}
     <div class="col-lg-4 col-md-4 col-sm-4 p-5">
-      <a href="{% url 'UserApp:PostView' i.post_slug %}" >
+      <a href="{% url 'UserApp:PostView' i.post_slug %}">
         <img src="{{i.post.url}}" class="profileposts" alt="">
       </a>
     </div>
     {% endfor %}
   </div>
   {% endif %}
+</div>
+
+
+<div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">{{data.username}}'s Followers</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% for user in data.Profile.followers.all %}
+        <div class="row">
+          <div class="col-lg-12 text-center">
+            <a href="{% url 'UserApp:profile' user %}" class="fs-4"
+              style="text-align: right; text-decoration: none; color: black;">
+              <img src="{{user.Profile.profilePhoto.url}}" class="profilePhoto" alt="" />
+              &nbsp; {{user}}
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">{{data.username}}'s Followers</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% for user in data.Profile.following.all %}
+        <div class="row">
+          <div class="col-lg-12 text-center">
+            <a href="{% url 'UserApp:profile' user %}" class="fs-4"
+              style="text-align: right; text-decoration: none; color: black;">
+              <img src="{{user.Profile.profilePhoto.url}}" class="profilePhoto" alt="" />
+              &nbsp; {{user}}
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

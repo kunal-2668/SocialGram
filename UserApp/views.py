@@ -24,7 +24,6 @@ def check_profile(view):
 @login_required(login_url='AuthApp:login')
 def new_post(request,user):
     if request.method == 'POST':
-        print(request)
         post_title = request.POST['post_title']
         post = request.FILES['post']
         user = request.user
@@ -45,14 +44,19 @@ def new_post(request,user):
 def home(request):
     user = request.user
     posts = []
-    for user in user.Profile.following.all():
-        for post in Posts.objects.filter(Q(user=user) | Q(user = request.user)):
-                posts.append(post)
+    if len(user.Profile.following.all()) > 0:
+        for user in user.Profile.following.all():
+            for post in Posts.objects.filter(Q(user=user) | Q(user = request.user)):
+                    posts.append(post)
+        context = {
+            'data':posts
+        }
+    else:
+        post = [post for post in Posts.objects.filter(user = request.user)]
 
-    data = Posts.objects.all().order_by('-created_at')
-    context = {
-        'data':posts
-    }
+        context = {
+            'data':post
+        }
     return render(request,'index.html',context)
 
 
@@ -74,7 +78,6 @@ def create_profile(request):
 
         Profile.objects.create(user = user,profilePhoto=profilePhoto)
         return redirect("UserApp:home")
-
 
 
 
@@ -170,7 +173,7 @@ def searchUser(request):
         return render(request,'searchpage.html')
         
 
-@check_profile
+# @check_profile
 def searchUseraxios(request,user):
     exist = User.objects.filter(username__contains=user).exists()
     if exist:
@@ -179,6 +182,7 @@ def searchUseraxios(request,user):
         obj = {}
         for i in data:
             profile = i.Profile.profilePhoto.url
+            user = i.Profile.user
             i = str(i)
             obj[i] = i
             new_data += f"""
@@ -188,7 +192,7 @@ def searchUseraxios(request,user):
                     <p class="fs-4">
                         {i}
                     </p>
-                    <a href="/profile/{i}" class="btn btn-outline-primary">View Profile</a>
+                    <a href='/profile/{user}' class="btn btn-outline-primary">View Profile</a>
                 </div>
             </div>
         """
@@ -199,3 +203,16 @@ def searchUseraxios(request,user):
         """
         return JsonResponse(data,safe=False)
         
+@check_profile
+@login_required(login_url='AuthApp:login')
+def editProfile(request):
+    if request.method == 'GET':
+        return render(request,'editProfile.html')
+    else:
+        data = Profile.objects.get(user = request.user)
+        Photo = request.FILES['profilephoto']
+        data.profilePhoto = Photo
+        data.save()
+        return redirect('UserApp:profile',user = request.user)
+
+

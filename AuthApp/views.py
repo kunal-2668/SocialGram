@@ -21,6 +21,7 @@ def SignupView(request):
                 return redirect('AuthApp:login')
             else:
                 User.objects.create_user(username=username,email=email,password=password)
+                messages.info(request,"Account Created!!")
                 return redirect('AuthApp:login')
         else:
             messages.warning(request,"Password mismatch")
@@ -40,7 +41,6 @@ def LoginView(request):
 
         if user:
             login(request,user)
-            messages.error(request,'Login Success')
             return redirect('UserApp:home')
         else:
             messages.error(request,'UserName/Password invalid, Try Again !!')

@@ -136,7 +136,9 @@
                           {% else %}
                           <i class="fa-solid fa-circle-user fs-4" style="color: #000000"></i>
                           {% endif %} 
-                          {{j.user}} - {{j.Comment}} 
+                          <a href="{% url 'UserApp:profile' j.user %}">
+                            {{j.user}} - {{j.Comment}} 
+                          </a>
                           {% if user == j.user %}
                           <a href="{% url 'UserApp:delete_Comment' j.id  i.post_slug %}"><i class="fa-solid fa-trash" style="color: #ff0000; text-align: end"></i> </a>
                           {% endif %}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %} 
-{% block title %}New Post{% endblock %} 
+{% block title %}Search User{% endblock %} 
 {% block content %}
 
 <style>
@@ -23,7 +23,7 @@
                     <p class="fs-4">
                         {{i}}
                     </p>
-                    <a href="" class="btn btn-outline-primary">View Profile</a>
+                    <a href="/profile/{{i}}" class="btn btn-outline-primary">View Profile</a>
                 </div>
             </div>
             {% endfor %}

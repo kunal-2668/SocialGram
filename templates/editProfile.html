@@ -1,0 +1,31 @@
+{% extends 'base.html' %} 
+{% block title %}Edit profile | {{user}}{% endblock %} 
+{% block content %}
+
+<style>
+
+    .center{
+        display: table;
+        margin: auto;
+    }
+    
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-5 col-md-8 col-sm-12 center">
+            <div class="innerdivbox mt-5 border p-5">
+                <h1>Edit Profile | {{user}}</h1>
+                <hr>
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="profilephoto" class="form-control custom" id="">
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-outline-dark">Make Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -17,4 +17,5 @@ urlpatterns = [
     path('discover/new',Discover,name='discover'),
     path('search/user',searchUser,name='searchUser'),
     path('search/user/<str:user>',searchUseraxios,name='searchaxios'),
+    path('edit/profile',editProfile,name='editprofile'),
 ]
